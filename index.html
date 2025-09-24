@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movies Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-film"></i> Movies Tracker</h1>
+            <p>Śledź swoje ulubione filmy i seriale</p>
+        </header>
+
+        <div class="search-section">
+            <div class="search-filters">
+                <button class="filter-btn active" data-type="all">Wszystko</button>
+                <button class="filter-btn" data-type="movie">Filmy</button>
+                <button class="filter-btn" data-type="tv">Seriale</button>
+            </div>
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="searchInput" placeholder="Wyszukaj film lub serial...">
+                <button id="clearBtn" type="button">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div id="searchDropdown" class="search-dropdown hidden">
+                    <div id="searchDropdownResults" class="search-dropdown-results"></div>
+                    <div id="loadingDropdown" class="loading-dropdown hidden">
+                        <i class="fas fa-spinner fa-spin"></i> Wyszukiwanie...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="watchlist-section">
+            <div class="watchlist-header">
+                <h2><i class="fas fa-bookmark"></i> Moja Watchlista</h2>
+                <div class="watchlist-stats">
+                    <span id="watchlistCount">0 pozycji</span>
+                </div>
+            </div>
+            <div id="watchlistGrid" class="grid">
+                <div class="empty-watchlist">
+                    <i class="far fa-bookmark"></i>
+                    <p>Twoja watchlista jest pusta</p>
+                    <p>Użyj wyszukiwarki powyżej, aby dodać filmy i seriale</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="detailsModal" class="modal hidden">
+        <div class="modal-content">
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="modal hidden">
+        <div class="modal-content episode-settings-modal">
+            <div id="settingsModalContent"></div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
