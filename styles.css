@@ -472,6 +472,7 @@ header p {
   font-size: clamp(0.75rem, 1.5vw, 0.9rem);
   display: flex;
   flex-direction: column;
+  gap: clamp(3px, 0.8vw, 5px);
 }
 .card-episode span {
   display: inline-block;
@@ -536,8 +537,8 @@ header p {
   font-weight: 500;
   transition: all 0.3s ease;
   font-size: clamp(12px, 1.8vw, 16px);
-  width: clamp(32px, 6.5vw, 48px);
-  height: clamp(32px, 6.5vw, 48px);
+  width: clamp(38px, 6.5vw, 48px);
+  height: clamp(38px, 6.5vw, 48px);
   display: flex;
   align-items: center;
   justify-content: center;
