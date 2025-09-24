@@ -706,7 +706,10 @@ async function showEpisodeSettings(tvShowId) {
     currentTVShow = tvShow;
 
     try {
-        const response = await fetch(`${BASE_URL}/tv/${tvShowId}?api_key=${API_KEY}&language=pl-PL`);
+        const response = await fetch(`/api/tmdb?action=tv&id=${tvShowId}`);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
         const details = await response.json();
 
         window.currentTVDetails = details;
@@ -821,7 +824,9 @@ async function showEpisodeSettings(tvShowId) {
         settingsModal.classList.remove('hidden');
     } catch (error) {
         console.error('Błąd ładowania ustawień odcinków:', error);
-        showToast('Błąd podczas ładowania ustawień', 'error');
+        console.error('TV Show ID:', tvShowId);
+        console.error('TV Show data:', tvShow);
+        showToast(`Błąd podczas ładowania ustawień: ${error.message}`, 'error');
     }
 }
 
@@ -858,11 +863,15 @@ async function updateEpisodeOptions() {
     const episodeOptions = [];
     let seasonEpisodes = [];
     try {
-        const seasonResponse = await fetch(`${BASE_URL}/tv/${currentTVShow.id}/season/${selectedSeason}?api_key=${API_KEY}&language=pl-PL`);
+        const seasonResponse = await fetch(`/api/tmdb?action=tv&id=${currentTVShow.id}&season=${selectedSeason}`);
+        if (!seasonResponse.ok) {
+            throw new Error(`HTTP ${seasonResponse.status}: ${seasonResponse.statusText}`);
+        }
         const seasonDetails = await seasonResponse.json();
         seasonEpisodes = seasonDetails.episodes || [];
     } catch (error) {
         console.error('Error fetching season details:', error);
+        console.error('TV Show ID:', currentTVShow.id, 'Season:', selectedSeason);
     }
 
     for (let i = 1; i <= maxAvailableEpisode; i++) {
