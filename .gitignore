@@ -1,3 +1,4 @@
+.gitignore
 /README.md
 /styles.scss
 /_utils.scss
