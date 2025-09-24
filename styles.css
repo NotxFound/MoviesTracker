@@ -49,19 +49,74 @@ body {
 
 header {
   text-align: center;
-  margin-bottom: clamp(20px, 4vw, 40px);
+  margin-bottom: clamp(30px, 5vw, 50px);
   color: white;
 }
-header h1 {
-  font-size: clamp(1.8rem, 3.6vw, 3rem);
-  margin-bottom: 10px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+header .header-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(15px, 3vw, 25px);
+  margin-bottom: clamp(15px, 3vw, 20px);
 }
-header p {
-  font-size: clamp(0.95rem, 1.8vw, 1.2rem);
-  opacity: 0.9;
+header .header-logo .logo-icon {
+  position: relative;
+  width: clamp(60px, 8vw, 80px);
+  height: clamp(60px, 8vw, 80px);
+  background: linear-gradient(135deg, #3a51b8 0%, #935dc9 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+  animation: logoGlow 3s ease-in-out infinite alternate;
+}
+header .header-logo .logo-icon i {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  color: white;
+}
+header .header-logo .logo-icon i.fa-tv {
+  display: none;
+}
+header .header-logo .logo-text {
+  text-align: left;
+}
+header .header-logo .logo-text h1 {
+  font-size: clamp(2rem, 4.5vw, 3.5rem);
+  margin: 0;
+  font-weight: 700;
+  background: linear-gradient(135deg, white, rgba(255, 255, 255, 0.8));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  line-height: 1.1;
+}
+header .header-logo .logo-text .logo-tagline {
+  font-size: clamp(0.75rem, 1.5vw, 0.95rem);
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 300;
+  font-style: italic;
+  letter-spacing: 0.5px;
+}
+@media (max-width: 768px) {
+  header .header-logo {
+    flex-direction: column;
+    gap: 15px;
+  }
+  header .header-logo .logo-text {
+    text-align: center;
+  }
 }
 
+@keyframes logoGlow {
+  0% {
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+  }
+  100% {
+    box-shadow: 0 12px 35px rgba(139, 92, 246, 0.5);
+  }
+}
 /* ===== SEARCH SECTION (base) ===== */
 .search-section {
   background: rgba(255, 255, 255, 0.95);
@@ -116,7 +171,7 @@ header p {
 #clearBtn {
   padding: 8px;
   background: #f0f0f0;
-  color: #666;
+  color: #777;
   border: none;
   border-radius: 50px;
   cursor: pointer;
@@ -207,7 +262,7 @@ header p {
   align-items: center;
   gap: clamp(8px, 1.5vw, 10px);
   font-size: clamp(0.8rem, 1.5vw, 0.85rem);
-  color: #666;
+  color: #777;
 }
 .search-dropdown-type {
   background: #667eea;
@@ -260,7 +315,7 @@ header p {
 .loading-dropdown {
   padding: 20px;
   text-align: center;
-  color: #666;
+  color: #777;
   font-size: 0.9rem;
 }
 .loading-dropdown i {
@@ -279,7 +334,7 @@ header p {
   padding: clamp(5px, 1.6vw, 10px) clamp(12px, 2.5vw, 20px);
   border: 2px solid #e0e0e0;
   background: white;
-  color: #666;
+  color: #777;
   border-radius: 25px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -496,7 +551,7 @@ header p {
 }
 
 .episode-history-icon {
-  color: #666;
+  color: #777;
 }
 
 .episode-clock-icon {
@@ -521,6 +576,42 @@ header p {
 
 .episode-missed-icon {
   color: #ff6b6b;
+}
+
+.movie-duration {
+  color: #667eea;
+}
+
+.movie-watched {
+  color: #00b894;
+}
+
+.movie-unwatched {
+  color: #ff6b6b;
+}
+
+.episode-history {
+  color: #777;
+}
+
+.episode-clock {
+  color: #667eea;
+}
+
+.episode-info {
+  color: #777;
+}
+
+.episode-current {
+  color: #00b894;
+}
+
+.episode-missed {
+  color: #ff6b6b;
+}
+
+.episode-question {
+  color: #777;
 }
 
 .card-actions {
@@ -598,6 +689,24 @@ header p {
   box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
 }
 
+.btn-success {
+  background: #00b894;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+.btn-success:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 184, 148, 0.4);
+}
+
 .btn-secondary {
   background: #f8f9fa;
   color: #6c757d;
@@ -610,7 +719,7 @@ header p {
 .empty-watchlist {
   text-align: center;
   padding: clamp(40px, 10vw, 80px) 20px;
-  color: #666;
+  color: #777;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -632,7 +741,7 @@ header p {
 .loading {
   text-align: center;
   padding: 40px;
-  color: #666;
+  color: #777;
   font-size: 1.1rem;
 }
 .loading i {
@@ -856,7 +965,7 @@ header p {
 }
 .episode-current-progress p {
   margin-bottom: clamp(4px, 1vw, 5px);
-  color: #666;
+  color: #777;
   font-size: clamp(0.9rem, 1.5vw, 1rem);
 }
 
@@ -889,7 +998,7 @@ header p {
   padding: clamp(4px, 1vw, 5px) 0;
   border-bottom: 1px solid #f0f0f0;
   font-size: clamp(0.8rem, 1.4vw, 0.9rem);
-  color: #666;
+  color: #777;
 }
 .missed-episode-item:last-child {
   border-bottom: none;
@@ -966,7 +1075,6 @@ header p {
 }
 
 .footer {
-  margin-top: clamp(40px, 6vw, 60px);
   padding: clamp(20px, 3vw, 30px) 0;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   text-align: center;
