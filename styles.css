@@ -527,7 +527,7 @@ header .header-logo .logo-text .logo-tagline {
   font-size: clamp(0.75rem, 1.5vw, 0.9rem);
   display: flex;
   flex-direction: column;
-  gap: clamp(3px, 0.8vw, 5px);
+  gap: clamp(3px, 0.8vw, 10px);
 }
 .card-episode span {
   display: inline-block;
