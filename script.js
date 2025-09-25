@@ -684,14 +684,14 @@ async function showMediaSettings(mediaId, mediaType) {
                     <div class="episode-form-row">
                         <div class="episode-form-group">
                             <label for="seasonSelect">Ostatni obejrzany sezon:</label>
-                            <select id="seasonSelect" onchange="handleSeasonChange()">
+                            <select id="seasonSelect" onchange="handleSeasonChange(); autoSaveProgress();">
                                 ${seasonOptions.join('')}
                             </select>
                         </div>
 
                         <div class="episode-form-group">
                             <label for="episodeSelect">Ostatni obejrzany odcinek:</label>
-                            <select id="episodeSelect" onchange="updateMissedEpisodesWarning()">
+                            <select id="episodeSelect" onchange="updateMissedEpisodesWarning(); autoSaveProgress();">
                                 ${episodeOptions.join('')}
                             </select>
                         </div>
@@ -747,11 +747,6 @@ async function showMediaSettings(mediaId, mediaType) {
                 </div>
                 <p class="rating-text">${currentRating > 0 ? `Twoja ocena: ${currentRating}/5` : 'Nie oceniono'}</p>
             </div>
-
-            <div class="modal-actions">
-                <button class="btn-cancel" onclick="closeMediaSettings()">Anuluj</button>
-                <button class="btn-save" onclick="saveMediaSettings('${mediaType}')">Zapisz</button>
-            </div>
         </div>
     `;
 
@@ -806,6 +801,55 @@ function setMediaRating(rating) {
 
     window.tempMediaRating = rating;
     ratingText.textContent = rating > 0 ? `Twoja ocena: ${rating}/5` : 'Nie oceniono';
+
+    // Auto-save rating change
+    autoSaveProgress();
+}
+
+function autoSaveProgress() {
+    if (currentTVShow) {
+        // Auto-save TV show progress
+        const seasonSelect = document.getElementById('seasonSelect');
+        const episodeSelect = document.getElementById('episodeSelect');
+
+        if (seasonSelect && episodeSelect) {
+            const season = parseInt(seasonSelect.value);
+            const episode = parseInt(episodeSelect.value);
+
+            const tvShowIndex = watchlist.findIndex(item => item.id === currentTVShow.id && item.media_type === 'tv');
+            if (tvShowIndex !== -1) {
+                watchlist[tvShowIndex].lastViewedSeason = season;
+                watchlist[tvShowIndex].lastViewedEpisode = episode;
+
+                if (window.tempMediaRating !== undefined) {
+                    watchlist[tvShowIndex].rating = window.tempMediaRating;
+                }
+
+                localStorage.setItem('watchlist', JSON.stringify(watchlist));
+                loadWatchlist();
+                showToast('Postęp zapisany!', 'success');
+            }
+        }
+    } else if (window.currentMovie) {
+        const movieIndex = watchlist.findIndex(item =>
+            item.id === window.currentMovie.id && item.media_type === 'movie'
+        );
+
+        if (movieIndex === -1) return;
+
+        if (window.tempMediaRating !== undefined) {
+            watchlist[movieIndex].rating = window.tempMediaRating;
+        }
+
+        if (window.tempMovieWatched !== undefined) {
+            watchlist[movieIndex].watched = window.tempMovieWatched;
+            watchlist[movieIndex].watch_date = window.tempMovieWatchDate;
+        }
+
+        localStorage.setItem('watchlist', JSON.stringify(watchlist));
+        loadWatchlist();
+        showToast('Ustawienia zapisane!', 'success');
+    }
 }
 
 function saveMediaSettings(mediaType) {
@@ -899,6 +943,9 @@ function toggleMovieWatchedInSettings() {
 
     window.tempMovieWatched = newWatchedState;
     window.tempMovieWatchDate = newWatchedState ? new Date().toISOString() : null;
+
+    // Auto-save the change
+    autoSaveProgress();
 }
 
 function getStatusInPolish(status) {

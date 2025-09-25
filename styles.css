@@ -50,7 +50,7 @@ body {
 header {
   text-align: center;
   margin-bottom: clamp(30px, 5vw, 50px);
-  color: white;
+  color: rgb(255, 255, 255);
 }
 header .header-logo {
   display: flex;
@@ -69,7 +69,6 @@ header .header-logo .logo-icon {
   align-items: center;
   justify-content: center;
   box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
-  animation: logoGlow 3s ease-in-out infinite alternate;
 }
 header .header-logo .logo-icon i {
   font-size: clamp(1.5rem, 4vw, 2rem);
@@ -85,10 +84,6 @@ header .header-logo .logo-text h1 {
   font-size: clamp(2rem, 4.5vw, 3.5rem);
   margin: 0;
   font-weight: 700;
-  background: linear-gradient(135deg, white, rgba(255, 255, 255, 0.8));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
   line-height: 1.1;
 }
@@ -109,15 +104,6 @@ header .header-logo .logo-text .logo-tagline {
   }
 }
 
-@keyframes logoGlow {
-  0% {
-    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
-  }
-  100% {
-    box-shadow: 0 12px 35px rgba(139, 92, 246, 0.5);
-  }
-}
-/* ===== SEARCH SECTION (base) ===== */
 .search-section {
   background: rgba(255, 255, 255, 0.95);
   -webkit-backdrop-filter: blur(10px);
@@ -517,15 +503,6 @@ header .header-logo .logo-text .logo-tagline {
   margin-bottom: clamp(4px, 1vw, 6px);
 }
 
-/* ensure tv-last and tv-info align nicely inside .card-content */
-.card-content .tv-last,
-.card-content .tv-info,
-.card-content .tv-status,
-.card-content .movie-time,
-.card-content .movie-status {
-  display: block;
-}
-
 .card-title {
   font-weight: 700;
   margin-bottom: 6px;
@@ -554,7 +531,6 @@ header .header-logo .logo-text .logo-tagline {
   color: #00b894;
 }
 
-/* Explicit status modifier classes for card-level elements */
 .tv-status.tv-missed {
   color: #ff6b6b;
 }
@@ -571,7 +547,6 @@ header .header-logo .logo-text .logo-tagline {
   color: #f39c12;
 }
 
-/* Next episode in tv-info should use primary color for emphasis */
 .tv-info.tv-info--next {
   color: #667eea;
 }
@@ -661,6 +636,16 @@ header .header-logo .logo-text .logo-tagline {
 .settings-section:has(h4 i.fa-tv) {
   border-left-color: #8b5cf6;
 }
+.settings-section:has(h4 i.fa-eye) .btn-toggle {
+  display: inline-flex;
+  margin-bottom: 0;
+}
+.settings-section:has(h4 i.fa-eye) .watch-date {
+  display: inline-block;
+  margin-top: 0;
+  margin-left: 15px;
+  vertical-align: middle;
+}
 
 .episode-missed-info {
   background: rgba(220, 53, 69, 0.1);
@@ -683,6 +668,7 @@ header .header-logo .logo-text .logo-tagline {
 .modal-actions {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   gap: 12px;
   margin-top: 24px;
   padding-top: 20px;
@@ -699,19 +685,22 @@ header .header-logo .logo-text .logo-tagline {
   cursor: pointer;
   font-weight: 500;
   transition: all 0.3s ease;
-  width: 100%;
+  width: auto;
+  max-width: 200px;
+  margin: 0;
   justify-content: center;
+  color: white;
 }
 .btn-toggle.watched {
   background: #00b894;
-  color: white;
+  justify-content: flex-end;
 }
 .btn-toggle.watched:hover {
   background: rgb(0, 133, 106.9782608696);
 }
 .btn-toggle.unwatched {
   background: #ff6b6b;
-  color: white;
+  justify-content: flex-start;
 }
 .btn-toggle.unwatched:hover {
   background: #ff3838;
@@ -720,8 +709,8 @@ header .header-logo .logo-text .logo-tagline {
 .watch-date {
   font-size: 0.85rem;
   color: #777;
-  margin-top: 8px;
-  text-align: center;
+  margin-top: 0;
+  text-align: right;
 }
 
 .card-actions {
@@ -859,8 +848,7 @@ header .header-logo .logo-text .logo-tagline {
   display: flex;
   align-items: center;
   justify-content: center;
-  align-items: flex-start;
-  padding-top: clamp(12px, 3.5vw, 36px);
+  align-items: center;
   z-index: 10;
 }
 
@@ -887,6 +875,7 @@ header .header-logo .logo-text .logo-tagline {
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
+  flex: 0 0 auto;
 }
 .modal-close-btn:hover {
   background: rgba(0, 0, 0, 0.9);
@@ -899,7 +888,7 @@ header .header-logo .logo-text .logo-tagline {
   justify-content: space-between;
   padding: clamp(15px, 3vw, 20px);
   border-bottom: 1px solid #eee;
-  gap: 10px;
+  gap: 10%;
   align-items: flex-start;
 }
 .modal-header h2 {
@@ -919,11 +908,6 @@ header .header-logo .logo-text .logo-tagline {
   min-width: 0;
   white-space: normal;
   word-break: break-word;
-}
-.modal-header .modal-close-btn {
-  flex: 0 0 auto;
-  margin-left: 12px;
-  margin-top: 4px;
 }
 
 .detail-main {
@@ -984,7 +968,7 @@ header .header-logo .logo-text .logo-tagline {
   flex: 1;
 }
 .detail-info p {
-  margin-bottom: 12px;
+  margin-bottom: 6px;
   line-height: 1.4;
 }
 
