@@ -1043,6 +1043,10 @@ header .header-logo .logo-text .logo-tagline {
 .modal-content {
   background: white;
   border-radius: 20px;
+  /* Keep a responsive min width so modals are roomy on larger screens
+     but still usable on small viewports. Uses a pixel floor of 300px and
+     targets roughly 50-70vw on typical screens. */
+  min-width: clamp(300px, 50vw, 70vw);
   max-width: clamp(300px, 95vw, 800px);
   max-height: 90vh;
   overflow-y: auto;
