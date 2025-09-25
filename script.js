@@ -698,6 +698,10 @@ async function showMediaSettings(mediaId, mediaType) {
                     </div>
                     
                     ${(() => {
+                    // Only show missed episodes warning if this is not a first-time setup
+                    const isFirstTimeSetup = !mediaItem.lastViewedSeason || !mediaItem.lastViewedEpisode;
+                    if (isFirstTimeSetup) return '';
+
                     const missedData = calculateMissedEpisodes(mediaItem, details.seasons);
                     return missedData.count > 0 ? generateMissedEpisodesHtml(missedData) : '';
                 })()}
@@ -1303,6 +1307,18 @@ async function updateEpisodeOptions() {
 function updateMissedEpisodesWarning() {
     if (!currentTVShow) return;
 
+    // Check if this is a first-time setup (no previous viewing progress)
+    const isFirstTimeSetup = !currentTVShow.lastViewedSeason || !currentTVShow.lastViewedEpisode;
+
+    // Hide warning during first-time setup
+    if (isFirstTimeSetup) {
+        const missedDiv = document.querySelector('.episode-missed-info');
+        if (missedDiv) {
+            missedDiv.remove();
+        }
+        return;
+    }
+
     const seasonSelect = document.getElementById('seasonSelect');
     const episodeSelect = document.getElementById('episodeSelect');
 
@@ -1322,9 +1338,9 @@ function updateMissedEpisodesWarning() {
         if (missedDiv) {
             missedDiv.outerHTML = missedEpisodesHtml;
         } else {
-            const progressDiv = document.querySelector('.episode-current-progress');
-            if (progressDiv) {
-                progressDiv.insertAdjacentHTML('afterend', missedEpisodesHtml);
+            const episodeFormRow = document.querySelector('.episode-form-row');
+            if (episodeFormRow) {
+                episodeFormRow.insertAdjacentHTML('afterend', missedEpisodesHtml);
             }
         }
     } else {
