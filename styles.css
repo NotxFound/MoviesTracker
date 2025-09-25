@@ -459,7 +459,7 @@ header .header-logo .logo-text .logo-tagline {
   margin-bottom: clamp(8px, 1.5vw, 10px);
   opacity: 0.5;
 }
-.card-placeholder span {
+.card-placeholder .placeholder-text {
   font-size: clamp(0.8rem, 1.5vw, 0.9rem);
   font-weight: 500;
   line-height: 1.3;
@@ -500,17 +500,41 @@ header .header-logo .logo-text .logo-tagline {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  justify-content: space-around;
-  gap: clamp(8px, 1.5vw, 15px);
+  justify-content: space-between;
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
-.card-info {
-  flex-grow: 1;
+.tv-last,
+.movie-time {
+  color: #667eea;
+  font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+  margin-bottom: clamp(4px, 1vw, 6px);
+}
+
+.tv-info,
+.tv-status,
+.movie-status {
+  color: #777;
+  font-size: clamp(0.7rem, 1.4vw, 0.85rem);
+  margin-bottom: clamp(4px, 1vw, 6px);
+}
+
+/* ensure tv-last and tv-info align nicely inside .card-content */
+.card-content .tv-last,
+.card-content .tv-info,
+.card-content .tv-status,
+.card-content .movie-time,
+.card-content .movie-status {
+  display: block;
+}
+
+.movie-year {
+  color: #777;
 }
 
 .card-title {
-  font-size: clamp(0.95rem, 1.8vw, 1.1rem);
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 6px;
   color: #333;
   height: 2.6em;
@@ -519,18 +543,6 @@ header .header-logo .logo-text .logo-tagline {
   -webkit-line-clamp: 2;
   line-clamp: 2;
   -webkit-box-orient: vertical;
-}
-
-.card-episode {
-  color: #667eea;
-  font-weight: 500;
-  font-size: clamp(0.75rem, 1.5vw, 0.9rem);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.card-episode span {
-  display: inline-block;
 }
 
 .card-status {
@@ -546,40 +558,33 @@ header .header-logo .logo-text .logo-tagline {
 .card-status:has(.episode-missed-icon) {
   color: #ff6b6b;
 }
-.card-status span {
-  display: inline-block;
-}
 
-.episode-history-icon {
+.tv-last-icon {
   color: #777;
 }
 
-.episode-clock-icon {
+.movie-time-icon {
   color: #667eea;
 }
 
-.episode-info-icon {
+.tv-info-icon {
   color: #999;
 }
 
-.episode-info-text {
+.tv-info-text {
   color: #999;
 }
 
-.episode-question-icon {
+.tv-question-icon {
   color: #ccc;
 }
 
-.episode-current-icon {
+.tv-current-icon {
   color: #00b894;
 }
 
-.episode-missed-icon {
+.tv-missed-icon {
   color: #ff6b6b;
-}
-
-.movie-duration {
-  color: #667eea;
 }
 
 .movie-watched {
@@ -587,37 +592,301 @@ header .header-logo .logo-text .logo-tagline {
 }
 
 .movie-unwatched {
+  color: #f39c12;
+}
+
+.tv-missed {
   color: #ff6b6b;
 }
 
-.episode-history {
-  color: #777;
-}
-
-.episode-clock {
-  color: #667eea;
-}
-
-.episode-info {
-  color: #777;
-}
-
-.episode-current {
+.tv-current {
   color: #00b894;
 }
 
-.episode-missed {
+/* Explicit status modifier classes for card-level elements */
+.tv-status.tv-missed {
   color: #ff6b6b;
 }
 
-.episode-question {
+.tv-status.tv-current {
+  color: #00b894;
+}
+
+.movie-status.movie-watched {
+  color: #00b894;
+}
+
+.movie-status.movie-unwatched {
+  color: #f39c12;
+}
+
+/* Next episode in tv-info should use primary color for emphasis */
+.tv-info.tv-info--next {
+  color: #667eea;
+}
+
+.tv-question {
   color: #777;
+}
+
+.card-rating {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(255, 193, 7, 0.9);
+  color: white;
+  padding: clamp(2px, 1vw, 4px) clamp(6px, 1.5vw, 8px);
+  border-radius: 15px;
+  font-size: clamp(10px, 1.5vw, 12px);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.card-rating i {
+  font-size: clamp(8px, 1.2vw, 10px);
+}
+
+.star-rating {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.star-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: #ddd;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  padding: 5px;
+}
+.star-btn.active, .star-btn:hover, .star-btn.hover {
+  color: #ffc107;
+}
+.star-btn.clear-rating {
+  color: #dc3545;
+  font-size: 1rem;
+  margin-left: 10px;
+}
+.star-btn.clear-rating:hover {
+  color: #c82333;
+}
+
+.rating-text {
+  font-size: 0.9rem;
+  color: #777;
+  margin-bottom: 15px;
+}
+
+.movie-settings-section,
+.tv-settings-section,
+.settings-section {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  border-left: 4px solid #667eea;
+}
+.movie-settings-section h4,
+.tv-settings-section h4,
+.settings-section h4 {
+  margin-bottom: 15px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.movie-settings-section h4 i,
+.tv-settings-section h4 i,
+.settings-section h4 i {
+  color: #667eea;
+}
+.movie-settings-section:has(h4 i.fa-play),
+.tv-settings-section:has(h4 i.fa-play),
+.settings-section:has(h4 i.fa-play) {
+  border-left-color: #4f46e5;
+}
+.movie-settings-section:has(h4 i.fa-star),
+.tv-settings-section:has(h4 i.fa-star),
+.settings-section:has(h4 i.fa-star) {
+  border-left-color: #f59e0b;
+}
+.movie-settings-section:has(h4 i.fa-eye),
+.tv-settings-section:has(h4 i.fa-eye),
+.settings-section:has(h4 i.fa-eye) {
+  border-left-color: #10b981;
+}
+.movie-settings-section:has(h4 i.fa-tv),
+.tv-settings-section:has(h4 i.fa-tv),
+.settings-section:has(h4 i.fa-tv) {
+  border-left-color: #8b5cf6;
+}
+
+.episode-chips-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.episode-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 60px;
+}
+.episode-chip:hover {
+  background: rgba(74, 144, 226, 0.1);
+  border-color: rgba(74, 144, 226, 0.3);
+  transform: translateY(-2px);
+}
+.episode-chip.selected {
+  background: #667eea;
+  border-color: #667eea;
+  color: white;
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+}
+.episode-chip .episode-number {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+}
+.episode-chip .episode-date {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.missed-episodes-chips {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(45px, 1fr));
+  gap: 4px;
+  margin-top: 12px;
+  max-height: 10em;
+  overflow-y: auto;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  border: 1px solid rgba(220, 53, 69, 0.2);
+}
+
+.missed-episode-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 2px;
+  background: rgba(220, 53, 69, 0.1);
+  border: 1px solid rgba(220, 53, 69, 0.3);
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #dc3545;
+  min-height: 40px;
+  aspect-ratio: 1;
+}
+.missed-episode-chip .episode-season {
+  font-size: 0.6rem;
+  opacity: 0.8;
+  line-height: 1;
+  margin-bottom: 1px;
+}
+.missed-episode-chip .episode-number {
+  font-weight: 600;
+  font-size: 0.7rem;
+  line-height: 1;
+}
+
+.episode-missed-info {
+  background: rgba(220, 53, 69, 0.1);
+  border: 1px solid rgba(220, 53, 69, 0.3);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 16px;
+}
+.episode-missed-info p {
+  margin: 0;
+}
+.episode-missed-info p:first-child {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.episode-missed-info p i {
+  margin-right: 8px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  width: 100%;
+  justify-content: center;
+}
+.btn-toggle.watched {
+  background: #00b894;
+  color: white;
+}
+.btn-toggle.watched:hover {
+  background: rgb(0, 133, 106.9782608696);
+}
+.btn-toggle.unwatched {
+  background: #ff6b6b;
+  color: white;
+}
+.btn-toggle.unwatched:hover {
+  background: #ff3838;
+}
+
+.watch-date {
+  font-size: 0.85rem;
+  color: #777;
+  margin-top: 8px;
+  text-align: center;
+}
+
+.movie-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
 }
 
 .card-actions {
   display: flex;
   gap: clamp(8px, 2vw, 15px);
   justify-content: center;
+  margin-top: clamp(12px, 2.5vw, 20px);
 }
 
 .btn {
@@ -635,7 +904,8 @@ header .header-logo .logo-text .logo-tagline {
   justify-content: center;
 }
 
-.btn-primary {
+.btn-primary,
+.btn-add {
   background: #667eea;
   color: white;
   border: none;
@@ -648,12 +918,14 @@ header .header-logo .logo-text .logo-tagline {
   justify-content: center;
   transition: all 0.3s ease;
 }
-.btn-primary:hover {
+.btn-primary:hover,
+.btn-add:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
-.btn-danger {
+.btn-danger,
+.btn-delete {
   background: #ff6b6b;
   color: white;
   border: none;
@@ -666,12 +938,14 @@ header .header-logo .logo-text .logo-tagline {
   justify-content: center;
   transition: all 0.3s ease;
 }
-.btn-danger:hover {
+.btn-danger:hover,
+.btn-delete:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
 }
 
-.btn-warning {
+.btn-warning,
+.btn-settings {
   background: #f39c12;
   color: white;
   border: none;
@@ -684,7 +958,8 @@ header .header-logo .logo-text .logo-tagline {
   justify-content: center;
   transition: all 0.3s ease;
 }
-.btn-warning:hover {
+.btn-warning:hover,
+.btn-settings:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
 }
@@ -707,12 +982,14 @@ header .header-logo .logo-text .logo-tagline {
   box-shadow: 0 4px 15px rgba(0, 184, 148, 0.4);
 }
 
-.btn-secondary {
+.btn-secondary,
+.btn-info {
   background: #f8f9fa;
   color: #6c757d;
   border: 1px solid #dee2e6;
 }
-.btn-secondary:hover {
+.btn-secondary:hover,
+.btn-info:hover {
   background: #e9ecef;
 }
 
@@ -758,6 +1035,8 @@ header .header-logo .logo-text .logo-tagline {
   display: flex;
   align-items: center;
   justify-content: center;
+  align-items: flex-start;
+  padding-top: clamp(12px, 3.5vw, 36px);
   z-index: 10;
 }
 
@@ -797,11 +1076,21 @@ header .header-logo .logo-text .logo-tagline {
   padding: clamp(15px, 3vw, 20px);
   border-bottom: 1px solid #eee;
   gap: 10px;
+  align-items: flex-start;
 }
 .modal-header h2 {
   margin-bottom: 0;
   color: #333;
   font-size: clamp(1.6rem, 3vw, 2rem);
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: normal;
+  word-break: break-word;
+}
+.modal-header .modal-close-btn {
+  flex: 0 0 auto;
+  margin-left: 12px;
+  margin-top: 4px;
 }
 
 .detail-main {
@@ -880,11 +1169,6 @@ header .header-logo .logo-text .logo-tagline {
   margin-bottom: 10px;
   color: #333;
   font-size: 1.3rem;
-}
-
-.episode-settings-modal {
-  max-width: clamp(300px, 95vw, 700px);
-  max-height: 75vh;
 }
 
 .modal-header {

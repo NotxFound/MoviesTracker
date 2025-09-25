@@ -224,55 +224,59 @@ function createMediaCard(item, isWatchlist = false) {
 
     const isInWatchlist = watchlist.some(w => w.id === item.id && w.media_type === mediaType);
 
-    let episodeInfo = '';
-    let missedEpisodesInfo = '';
-    let movieInfo = '';
+    let mediaHistory = '';
+    let mediaInfo = '';
+    let mediaStatus = '';
 
     if (isWatchlist && mediaType === 'tv') {
-        episodeInfo = `<div class="card-episode">
-           ${getLatestEpisodeInfo(item)}
-        </div>`;
+        // TV: last aired ep
+        if (item.last_episode_to_air) {
+            const le = item.last_episode_to_air;
+            mediaHistory = `<div class="tv-last"><i class="fas fa-history"></i> S${le.season_number}E${le.episode_number} - ${formatDate(le.air_date)}</div>`;
+        } else {
+            mediaHistory = '';
+        }
 
+        // TV info - show next episode if planned; otherwise show series status (Returning, Ended, etc.)
+        if (item.next_episode_to_air) {
+            const ne = item.next_episode_to_air;
+            mediaInfo = `<div class="tv-info tv-info--next"><i class="fas fa-clock"></i> ${formatEpisodeWithDate(ne.season_number, ne.episode_number, ne.air_date)}</div>`;
+        } else if (item.status) {
+            mediaInfo = `<div class="tv-info tv-info--status"><i class="fas fa-info-circle"></i> ${getStatusInPolish(item.status)}</div>`;
+        } else {
+            mediaInfo = '';
+        }
+
+        // TV progress/status (missed or up-to-date)
         if (item.lastViewedSeason && item.lastViewedEpisode) {
             const missedData = calculateMissedEpisodes(item, item.seasons);
             if (missedData.count > 0) {
-                missedEpisodesInfo = `<div class="card-status">
-                    <span class="episode-missed"><i class="fas fa-exclamation-triangle"></i>
-                    ${missedData.count} odc. do obejrzenia! </span>
-                </div> `;
+                mediaStatus = `<div class="tv-status tv-missed"><i class=\"fas fa-exclamation-triangle\"></i> ${missedData.count} odc. do obejrzenia!</div>`;
             } else {
-                missedEpisodesInfo = `<div class="card-status">
-                        <span class="episode-current"><i class="fas fa-check-circle"></i> Jesteś na bieżąco! </span>
-                </div> `;
+                mediaStatus = `<div class="tv-status tv-current"><i class=\"fas fa-check-circle\"></i> Jesteś na bieżąco!</div>`;
             }
+        } else {
+            mediaStatus = '';
         }
     }
 
     if (isWatchlist && mediaType === 'movie') {
-        let movieInfoParts = [];
-
-        // Runtime only
+        // Movie time (runtime)
         if (item.runtime) {
             const hours = Math.floor(item.runtime / 60);
             const minutes = item.runtime % 60;
             const duration = hours > 0 ? `${hours}h ${minutes}min` : `${minutes}min`;
-            movieInfoParts.push(`<span class="movie-duration"><i class="fas fa-clock"></i> ${duration}</span>`);
+            mediaHistory = `<div class="movie-time"><i class="fas fa-clock"></i> ${duration}</div>`;
+        } else {
+            mediaHistory = '';
         }
 
-        if (movieInfoParts.length > 0) {
-            movieInfo = `<div class="card-episode movie-info">
-                ${movieInfoParts.join('')}
-            </div>`;
-        }
+        // No release year on movie card
+        mediaInfo = '';
 
-        // Watch status
+        // Movie status (watched/unwatched) with modifier classes for coloring
         const isWatched = item.watched || false;
-        missedEpisodesInfo = `<div class="card-status movie-status">
-            ${isWatched ?
-                `<span class="movie-watched"><i class="fas fa-check-circle"></i> Obejrzany</span>` :
-                `<span class="movie-unwatched"><i class="fas fa-eye"></i> Do obejrzenia</span>`
-            }
-        </div>`;
+        mediaStatus = `<div class="movie-status ${isWatched ? 'movie-watched' : 'movie-unwatched'}">${isWatched ? `<i class="fas fa-check-circle"></i> Obejrzany` : `<i class="fas fa-eye"></i> Do obejrzenia`}</div>`;
     }
 
     return `
@@ -284,24 +288,24 @@ function createMediaCard(item, isWatchlist = false) {
         }
                 <div class="card-placeholder ${hasImage ? 'hidden' : ''}">
                     <i class="fas ${mediaType === 'movie' ? 'fa-film' : 'fa-tv'}"></i>
-                    <span>${title}</span>
+                    <div class="placeholder-text">${title}</div>
                 </div>
+                ${mediaType === 'tv' ? `
                 <div class="card-date">
                     <i class="fas fa-calendar"></i>
                     ${releaseDate ? new Date(releaseDate).getFullYear() : 'Brak daty'}
                 </div>
+                ` : ''}
                 <div class="card-type">
                     <i class="fas ${mediaType === 'movie' ? 'fa-film' : 'fa-tv'}"></i>
                     ${mediaType === 'movie' ? 'Film' : 'Serial'}
                 </div>
             </div>
             <div class="card-content">
-                <div class="card-info">
-                    <h3 class="card-title">${title}</h3>
-                    ${episodeInfo}
-                    ${movieInfo}
-                    ${missedEpisodesInfo}
-                </div>
+                <h3 class="card-title">${title}</h3>
+                ${mediaHistory || ''}
+                ${mediaInfo || ''}
+                ${mediaStatus || ''}
                 <div class="card-actions">
                     ${isWatchlist ?
             `<button class="btn btn-danger" onclick="(function(e){ e.stopPropagation(); removeFromWatchlist(${item.id}, '${mediaType}', '${escapeStringForOnclick(title)}'); })(event)" title="Usuń z watchlisty">
@@ -505,7 +509,7 @@ async function showDetails(id, mediaType) {
             const tvDetails = await getTVDetails(id);
             const creators = tvDetails.created_by && tvDetails.created_by.length > 0
                 ? tvDetails.created_by.map(c => c.name).join(', ')
-                : '<span class="episode-info-text">Brak informacji</span>';
+                : '<span class="tv-info-text">Brak informacji</span>';
 
             additionalInfo = `
                     <div class="detail-info">
@@ -541,7 +545,7 @@ async function showDetails(id, mediaType) {
                 `<img src="${IMAGE_BASE_URL + details.poster_path}" alt="${details.title || details.name}" onerror="this.parentElement.classList.add('no-image'); this.style.display='none';">` :
                 `<div class="detail-placeholder">
                             <i class="fas ${details.media_type === 'movie' || !details.media_type ? 'fa-film' : 'fa-tv'}"></i>
-                            <span>Brak obrazu</span>
+                            <div class="placeholder-text">Brak obrazu</div>
                         </div>`
             }
                 </div>
@@ -569,25 +573,25 @@ async function showDetails(id, mediaType) {
 
 function getLatestEpisodeInfo(item) {
     let episodeText = '';
-
-    if (item.last_episode_to_air) {
-        const lastEpisode = item.last_episode_to_air;
-        episodeText += `<span class="episode-history"><i class="fas fa-history"></i> ${formatEpisodeWithDate(lastEpisode.season_number, lastEpisode.episode_number, lastEpisode.air_date)} </span>`;
-    }
-
+    // If there's a next episode planned, show only that in tv-info (primary color)
     if (item.next_episode_to_air) {
         const nextEpisode = item.next_episode_to_air;
-        if (episodeText);
-        episodeText += `<span class="episode-clock"><i class="fas fa-clock"></i> ${formatEpisodeWithDate(nextEpisode.season_number, nextEpisode.episode_number, nextEpisode.air_date)} </span>`;
-    } else if (item.status && episodeText) {
-        episodeText += `<span class="episode-info"><i class="fas fa-info-circle"></i> ${getStatusInPolish(item.status)}</span>`;
+        return `<div class="tv-info tv-info--next"><i class="fas fa-clock"></i> ${formatEpisodeWithDate(nextEpisode.season_number, nextEpisode.episode_number, nextEpisode.air_date)}</div>`;
     }
 
-    if (!episodeText) {
-        episodeText = '<span class="episode-question"><i class="fas fa-question-circle"></i>Brak informacji o odcinkach</span>';
+    // If no next episode, prefer showing the series status (Returning/Ended/etc.)
+    if (item.status) {
+        return `<div class="tv-info tv-info--status"><i class="fas fa-info-circle"></i> ${getStatusInPolish(item.status)}</div>`;
     }
 
-    return episodeText;
+    // If no status, but we have last aired episode, show it as tv-last
+    if (item.last_episode_to_air) {
+        const lastEpisode = item.last_episode_to_air;
+        return `<div class="tv-last"><i class="fas fa-history"></i> ${formatEpisodeWithDate(lastEpisode.season_number, lastEpisode.episode_number, lastEpisode.air_date)}</div>`;
+    }
+
+    // Fallback: unknown
+    return '<div class="tv-question"><i class="fas fa-question-circle"></i> Brak informacji o odcinkach</div>';
 }
 
 function getStatusInPolish(status) {
