@@ -1110,137 +1110,6 @@ function calculateMissedEpisodes(tvShow, seasonData = null) {
     };
 }
 
-async function showEpisodeSettings(tvShowId) {
-    const tvShow = watchlist.find(item => item.id === tvShowId && item.media_type === 'tv');
-    if (!tvShow) return;
-
-    currentTVShow = tvShow;
-
-    try {
-        const response = await fetch(`/api/tmdb?action=tv&id=${tvShowId}`);
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        const details = await response.json();
-
-        window.currentTVDetails = details;
-
-        const currentSeason = tvShow.lastViewedSeason || 1;
-        const currentEpisode = tvShow.lastViewedEpisode || 1;
-
-        const seasonOptions = [];
-        const actualSeasons = details.seasons.filter(season => season.season_number > 0);
-
-        for (const season of actualSeasons) {
-            const selected = season.season_number == currentSeason;
-
-            let displayEpisodeCount = season.episode_count;
-            if (tvShow.last_episode_to_air) {
-                const lastAiredSeason = tvShow.last_episode_to_air.season_number;
-                const lastAiredEpisode = tvShow.last_episode_to_air.episode_number;
-
-                if (season.season_number === lastAiredSeason) {
-                    displayEpisodeCount = lastAiredEpisode;
-                } else if (season.season_number > lastAiredSeason) {
-                    displayEpisodeCount = 0;
-                }
-            }
-
-            seasonOptions.push(generateSelectOption(season.season_number, `Sezon ${season.season_number} (${displayEpisodeCount} odcinków)`, selected));
-        }
-
-        const currentSeasonData = details.seasons.find(s => s.season_number == currentSeason);
-        const maxEpisodes = currentSeasonData ? currentSeasonData.episode_count : 20;
-
-        let maxAvailableEpisode = maxEpisodes;
-        if (tvShow.last_episode_to_air) {
-            const lastAiredSeason = tvShow.last_episode_to_air.season_number;
-            const lastAiredEpisode = tvShow.last_episode_to_air.episode_number;
-
-            if (currentSeason === lastAiredSeason) {
-                maxAvailableEpisode = Math.min(maxEpisodes, lastAiredEpisode);
-            } else if (currentSeason > lastAiredSeason) {
-                maxAvailableEpisode = 0;
-            }
-        }
-
-        const episodeOptions = [];
-
-        let seasonEpisodes = [];
-        try {
-            const seasonDetails = await getTVSeasonDetails(tvShowId, currentSeason);
-            seasonEpisodes = seasonDetails.episodes || [];
-        } catch (error) {
-            console.error('Error fetching season details:', error);
-        }
-
-        for (let i = 1; i <= maxAvailableEpisode; i++) {
-            const episode = seasonEpisodes.find(ep => ep.episode_number === i);
-            const episodeDate = episode && episode.air_date ? ` (${formatDate(episode.air_date)
-                })` : '';
-            episodeOptions.push(generateSelectOption(i, `Odcinek ${i}${episodeDate} `, i == currentEpisode));
-        }
-
-        const missedData = calculateMissedEpisodes(tvShow, details.seasons);
-        let missedEpisodesHtml = '';
-
-        if (missedData.count > 0) {
-            missedEpisodesHtml = generateMissedEpisodesHtml(missedData);
-        }
-
-        settingsModalContent.innerHTML = `
-                <div class="modal-header">
-                    <h2>${tvShow.name}</h2>
-                    <button class="modal-close-btn" onclick="closeEpisodeSettings()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="episode-current-progress">
-                        <h4><i class="fas fa-tv"></i> ${tvShow.name}</h4>
-                        <p><strong>Liczba sezonów:</strong> ${actualSeasons.length}</p>
-                        <p><strong>Ostatni wyemitowany:</strong> ${tvShow.last_episode_to_air ?
-                formatEpisodeWithDate(tvShow.last_episode_to_air.season_number, tvShow.last_episode_to_air.episode_number, tvShow.last_episode_to_air.air_date) :
-                'Brak informacji'}</p>
-                        <p><strong>Następny odcinek:</strong> ${tvShow.next_episode_to_air ?
-                formatEpisodeWithDate(tvShow.next_episode_to_air.season_number, tvShow.next_episode_to_air.episode_number, tvShow.next_episode_to_air.air_date) :
-                'Brak planowanych'}</p>
-                    </div>
-
-                    <div class="episode-form-row">
-                        <div class="episode-form-group">
-                            <label for="seasonSelect">Ostatni obejrzany sezon:</label>
-                            <select id="seasonSelect" onchange="handleSeasonChange()">
-                                ${seasonOptions.join('')}
-                            </select>
-                        </div>
-
-                        <div class="episode-form-group">
-                            <label for="episodeSelect">Ostatni obejrzany odcinek:</label>
-                            <select id="episodeSelect" onchange="updateMissedEpisodesWarning()">
-                                ${episodeOptions.join('')}
-                            </select>
-                        </div>
-                    </div>
-
-                    ${missedEpisodesHtml}
-
-                    <div class="episode-actions">
-                        <button class="btn-cancel" onclick="closeEpisodeSettings()">Anuluj</button>
-                        <button class="btn-save" onclick="saveEpisodeProgress()">Zapisz</button>
-                    </div>
-                </div>
-                `;
-
-        settingsModal.classList.remove('hidden');
-    } catch (error) {
-        console.error('Błąd ładowania ustawień odcinków:', error);
-        console.error('TV Show ID:', tvShowId);
-        console.error('TV Show data:', tvShow);
-        showToast(`Błąd podczas ładowania ustawień: ${error.message}`, 'error');
-    }
-}
-
 async function handleSeasonChange() {
     await updateEpisodeOptions();
 }
@@ -1329,7 +1198,9 @@ function updateMissedEpisodesWarning() {
             missedDiv.remove();
         }
     }
-} function saveEpisodeProgress() {
+}
+
+function saveEpisodeProgress() {
     if (!currentTVShow) return;
 
     const seasonSelect = document.getElementById('seasonSelect');
