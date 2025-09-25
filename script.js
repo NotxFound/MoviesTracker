@@ -1307,18 +1307,6 @@ async function updateEpisodeOptions() {
 function updateMissedEpisodesWarning() {
     if (!currentTVShow) return;
 
-    // Check if this is a first-time setup (no previous viewing progress)
-    const isFirstTimeSetup = !currentTVShow.lastViewedSeason || !currentTVShow.lastViewedEpisode;
-
-    // Hide warning during first-time setup
-    if (isFirstTimeSetup) {
-        const missedDiv = document.querySelector('.episode-missed-info');
-        if (missedDiv) {
-            missedDiv.remove();
-        }
-        return;
-    }
-
     const seasonSelect = document.getElementById('seasonSelect');
     const episodeSelect = document.getElementById('episodeSelect');
 
