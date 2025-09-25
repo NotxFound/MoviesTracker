@@ -126,7 +126,6 @@ header .header-logo .logo-text .logo-tagline {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   padding: clamp(20px, 3vw, 30px) clamp(15px, 4vw, 30px);
   margin-bottom: clamp(30px, 5vw, 40px);
-  margin-bottom: clamp(30px, 5vw, 40px);
   position: relative;
   z-index: 1;
   animation: slideDown 0.6s ease-out;
@@ -351,7 +350,6 @@ header .header-logo .logo-text .logo-tagline {
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
-.results-section,
 .watchlist-section {
   background: rgba(255, 255, 255, 0.95);
   -webkit-backdrop-filter: blur(10px);
@@ -362,7 +360,6 @@ header .header-logo .logo-text .logo-tagline {
   margin-bottom: clamp(30px, 5vw, 40px);
 }
 
-.results-section h2,
 .watchlist-header h2 {
   margin-bottom: clamp(20px, 3vw, 25px);
   color: #333;
@@ -529,10 +526,6 @@ header .header-logo .logo-text .logo-tagline {
   display: block;
 }
 
-.movie-year {
-  color: #777;
-}
-
 .card-title {
   font-weight: 700;
   margin-bottom: 6px;
@@ -543,48 +536,6 @@ header .header-logo .logo-text .logo-tagline {
   -webkit-line-clamp: 2;
   line-clamp: 2;
   -webkit-box-orient: vertical;
-}
-
-.card-status {
-  font-weight: 500;
-  font-size: clamp(0.75rem, 1.5vw, 0.9rem);
-  margin-top: clamp(3px, 0.8vw, 5px);
-  display: flex;
-  align-items: center;
-}
-.card-status:has(.episode-current-icon) {
-  color: #00b894;
-}
-.card-status:has(.episode-missed-icon) {
-  color: #ff6b6b;
-}
-
-.tv-last-icon {
-  color: #777;
-}
-
-.movie-time-icon {
-  color: #667eea;
-}
-
-.tv-info-icon {
-  color: #999;
-}
-
-.tv-info-text {
-  color: #999;
-}
-
-.tv-question-icon {
-  color: #ccc;
-}
-
-.tv-current-icon {
-  color: #00b894;
-}
-
-.tv-missed-icon {
-  color: #ff6b6b;
 }
 
 .movie-watched {
@@ -681,8 +632,6 @@ header .header-logo .logo-text .logo-tagline {
   margin-bottom: 15px;
 }
 
-.movie-settings-section,
-.tv-settings-section,
 .settings-section {
   background: #f8f9fa;
   padding: 15px;
@@ -690,8 +639,6 @@ header .header-logo .logo-text .logo-tagline {
   margin-bottom: 20px;
   border-left: 4px solid #667eea;
 }
-.movie-settings-section h4,
-.tv-settings-section h4,
 .settings-section h4 {
   margin-bottom: 15px;
   color: #333;
@@ -699,118 +646,20 @@ header .header-logo .logo-text .logo-tagline {
   align-items: center;
   gap: 8px;
 }
-.movie-settings-section h4 i,
-.tv-settings-section h4 i,
 .settings-section h4 i {
   color: #667eea;
 }
-.movie-settings-section:has(h4 i.fa-play),
-.tv-settings-section:has(h4 i.fa-play),
 .settings-section:has(h4 i.fa-play) {
-  border-left-color: #4f46e5;
+  border-left-color: #e54646;
 }
-.movie-settings-section:has(h4 i.fa-star),
-.tv-settings-section:has(h4 i.fa-star),
 .settings-section:has(h4 i.fa-star) {
   border-left-color: #f59e0b;
 }
-.movie-settings-section:has(h4 i.fa-eye),
-.tv-settings-section:has(h4 i.fa-eye),
 .settings-section:has(h4 i.fa-eye) {
   border-left-color: #10b981;
 }
-.movie-settings-section:has(h4 i.fa-tv),
-.tv-settings-section:has(h4 i.fa-tv),
 .settings-section:has(h4 i.fa-tv) {
   border-left-color: #8b5cf6;
-}
-
-.episode-chips-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-  gap: 12px;
-  max-height: 300px;
-  overflow-y: auto;
-  padding: 16px;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.episode-chip {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 8px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  min-height: 60px;
-}
-.episode-chip:hover {
-  background: rgba(74, 144, 226, 0.1);
-  border-color: rgba(74, 144, 226, 0.3);
-  transform: translateY(-2px);
-}
-.episode-chip.selected {
-  background: #667eea;
-  border-color: #667eea;
-  color: white;
-  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
-}
-.episode-chip .episode-number {
-  font-weight: 600;
-  font-size: 1.1rem;
-  margin-bottom: 4px;
-}
-.episode-chip .episode-date {
-  font-size: 0.75rem;
-  opacity: 0.8;
-  text-align: center;
-  line-height: 1.2;
-}
-
-.missed-episodes-chips {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(45px, 1fr));
-  gap: 4px;
-  margin-top: 12px;
-  max-height: 10em;
-  overflow-y: auto;
-  padding: 8px;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 8px;
-  border: 1px solid rgba(220, 53, 69, 0.2);
-}
-
-.missed-episode-chip {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4px 2px;
-  background: rgba(220, 53, 69, 0.1);
-  border: 1px solid rgba(220, 53, 69, 0.3);
-  border-radius: 4px;
-  font-size: 0.7rem;
-  font-weight: 500;
-  color: #dc3545;
-  min-height: 40px;
-  aspect-ratio: 1;
-}
-.missed-episode-chip .episode-season {
-  font-size: 0.6rem;
-  opacity: 0.8;
-  line-height: 1;
-  margin-bottom: 1px;
-}
-.missed-episode-chip .episode-number {
-  font-weight: 600;
-  font-size: 0.7rem;
-  line-height: 1;
 }
 
 .episode-missed-info {
@@ -875,13 +724,6 @@ header .header-logo .logo-text .logo-tagline {
   text-align: center;
 }
 
-.movie-actions {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  margin-top: 20px;
-}
-
 .card-actions {
   display: flex;
   gap: clamp(8px, 2vw, 15px);
@@ -904,7 +746,6 @@ header .header-logo .logo-text .logo-tagline {
   justify-content: center;
 }
 
-.btn-primary,
 .btn-add {
   background: #667eea;
   color: white;
@@ -918,13 +759,11 @@ header .header-logo .logo-text .logo-tagline {
   justify-content: center;
   transition: all 0.3s ease;
 }
-.btn-primary:hover,
 .btn-add:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
-.btn-danger,
 .btn-delete {
   background: #ff6b6b;
   color: white;
@@ -938,13 +777,11 @@ header .header-logo .logo-text .logo-tagline {
   justify-content: center;
   transition: all 0.3s ease;
 }
-.btn-danger:hover,
 .btn-delete:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
 }
 
-.btn-warning,
 .btn-settings {
   background: #f39c12;
   color: white;
@@ -958,7 +795,6 @@ header .header-logo .logo-text .logo-tagline {
   justify-content: center;
   transition: all 0.3s ease;
 }
-.btn-warning:hover,
 .btn-settings:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
@@ -982,13 +818,11 @@ header .header-logo .logo-text .logo-tagline {
   box-shadow: 0 4px 15px rgba(0, 184, 148, 0.4);
 }
 
-.btn-secondary,
 .btn-info {
   background: #f8f9fa;
   color: #6c757d;
   border: 1px solid #dee2e6;
 }
-.btn-secondary:hover,
 .btn-info:hover {
   background: #e9ecef;
 }
@@ -1013,16 +847,6 @@ header .header-logo .logo-text .logo-tagline {
   margin-bottom: clamp(8px, 2vw, 10px);
   font-size: clamp(1rem, 1.8vw, 1.1rem);
   max-width: 400px;
-}
-
-.loading {
-  text-align: center;
-  padding: 40px;
-  color: #777;
-  font-size: 1.1rem;
-}
-.loading i {
-  margin-right: 10px;
 }
 
 .modal {
@@ -1082,6 +906,15 @@ header .header-logo .logo-text .logo-tagline {
   margin-bottom: 0;
   color: #333;
   font-size: clamp(1.6rem, 3vw, 2rem);
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: normal;
+  word-break: break-word;
+}
+.modal-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: clamp(1.3rem, 2.5vw, 1.5rem);
   flex: 1 1 auto;
   min-width: 0;
   white-space: normal;
@@ -1169,19 +1002,6 @@ header .header-logo .logo-text .logo-tagline {
   margin-bottom: 10px;
   color: #333;
   font-size: 1.3rem;
-}
-
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: clamp(15px, 3vw, 20px);
-  border-bottom: 1px solid #eee;
-}
-.modal-header h3 {
-  margin: 0;
-  color: #333;
-  font-size: clamp(1.3rem, 2.5vw, 1.5rem);
 }
 
 .modal-body {

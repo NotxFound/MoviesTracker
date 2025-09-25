@@ -506,7 +506,7 @@ async function showDetails(id, mediaType) {
             const tvDetails = await getTVDetails(id);
             const creators = tvDetails.created_by && tvDetails.created_by.length > 0
                 ? tvDetails.created_by.map(c => c.name).join(', ')
-                : '<span class="tv-info-text">Brak informacji</span>';
+                : 'Brak informacji';
 
             additionalInfo = `
                     <div class="detail-info">
