@@ -247,7 +247,7 @@ function createMediaCard(item, isWatchlist = false) {
             mediaInfo = '';
         }
 
-        // TV progress/status (missed or up-to-date)
+        // TV progress/status
         if (item.lastViewedSeason && item.lastViewedEpisode) {
             const missedData = calculateMissedEpisodes(item, item.seasons);
             if (missedData.count > 0) {
@@ -261,7 +261,7 @@ function createMediaCard(item, isWatchlist = false) {
     }
 
     if (isWatchlist && mediaType === 'movie') {
-        // Movie time (runtime)
+        // Movie time
         if (item.runtime) {
             const hours = Math.floor(item.runtime / 60);
             const minutes = item.runtime % 60;
@@ -274,7 +274,7 @@ function createMediaCard(item, isWatchlist = false) {
         // No release year on movie card
         mediaInfo = '';
 
-        // Movie status (watched/unwatched) with modifier classes for coloring
+        // Movie status with modifier classes
         const isWatched = item.watched || false;
         mediaStatus = `<div class="movie-status ${isWatched ? 'movie-watched' : 'movie-unwatched'}">${isWatched ? `<i class="fas fa-check-circle"></i> Obejrzany` : `<i class="fas fa-eye"></i> Do obejrzenia`}</div>`;
     }
@@ -300,6 +300,9 @@ function createMediaCard(item, isWatchlist = false) {
                     <i class="fas ${mediaType === 'movie' ? 'fa-film' : 'fa-tv'}"></i>
                     ${mediaType === 'movie' ? 'Film' : 'Serial'}
                 </div>
+                ${item.rating ? `<div class="card-rating">
+                    ${item.rating} <i class="fas fa-star"></i>
+                </div>` : ''}
             </div>
             <div class="card-content">
                 <h3 class="card-title">${title}</h3>
@@ -308,25 +311,19 @@ function createMediaCard(item, isWatchlist = false) {
                 ${mediaStatus || ''}
                 <div class="card-actions">
                     ${isWatchlist ?
-            `<button class="btn btn-danger" onclick="(function(e){ e.stopPropagation(); removeFromWatchlist(${item.id}, '${mediaType}', '${escapeStringForOnclick(title)}'); })(event)" title="Usuń z watchlisty">
+            `<button class="btn btn-delete" onclick="(function(e){ e.stopPropagation(); removeFromWatchlist(${item.id}, '${mediaType}', '${escapeStringForOnclick(title)}'); })(event)" title="Usuń z watchlisty">
                             <i class="fas fa-trash"></i>
                         </button>
-                        ${mediaType === 'tv' ?
-                `<button class="btn btn-warning" onclick="(function(e){ e.stopPropagation(); showEpisodeSettings(${item.id}); })(event)" title="Ustawienia odcinków">
+                        <button class="btn btn-settings" onclick="(function(e){ e.stopPropagation(); showMediaSettings(${item.id}, '${mediaType}'); })(event)" title="Ustawienia">
                             <i class="fas fa-cog"></i>
-                        </button>` :
-                mediaType === 'movie' ?
-                    `<button class="btn btn-success" onclick="(function(e){ e.stopPropagation(); toggleMovieWatchStatus(${item.id}); })(event)" title="${item.watched ? 'Oznacz jako nieobejrzany' : 'Oznacz jako obejrzany'}">
-                            <i class="fas ${item.watched ? 'fa-eye-slash' : 'fa-eye'}"></i>
-                        </button>` : ''
-            }
-                        <button class="btn btn-secondary" onclick="(function(e){ e.stopPropagation(); showDetails(${item.id}, '${mediaType}'); })(event)" title="Szczegóły">
+                        </button>
+                        <button class="btn btn-info" onclick="(function(e){ e.stopPropagation(); showDetails(${item.id}, '${mediaType}'); })(event)" title="Szczegóły">
                             <i class="fas fa-info-circle"></i>
                         </button>` :
-            `<button class="btn btn-primary" onclick="(function(e){ e.stopPropagation(); addToWatchlist(${item.id}, '${mediaType}'); })(event)" title="${isInWatchlist ? 'W watchliście' : 'Dodaj do watchlisty'}">
+            `<button class="btn btn-add" onclick="(function(e){ e.stopPropagation(); addToWatchlist(${item.id}, '${mediaType}'); })(event)" title="${isInWatchlist ? 'W watchliście' : 'Dodaj do watchlisty'}">
                             <i class="fas fa-plus"></i>
                         </button>
-                        <button class="btn btn-secondary" onclick="(function(e){ e.stopPropagation(); showDetails(${item.id}, '${mediaType}'); })(event)" title="Szczegóły">
+                        <button class="btn btn-info" onclick="(function(e){ e.stopPropagation(); showDetails(${item.id}, '${mediaType}'); })(event)" title="Szczegóły">
                             <i class="fas fa-info-circle"></i>
                         </button>`
         }
@@ -592,6 +589,316 @@ function getLatestEpisodeInfo(item) {
 
     // Fallback: unknown
     return '<div class="tv-question"><i class="fas fa-question-circle"></i> Brak informacji o odcinkach</div>';
+}
+
+async function showMediaSettings(mediaId, mediaType) {
+    const mediaItem = watchlist.find(item => item.id === mediaId && item.media_type === mediaType);
+    if (!mediaItem) return;
+
+    const title = mediaItem.title || mediaItem.name;
+    const currentRating = mediaItem.rating || 0;
+
+    let mediaSpecificContent = '';
+
+    if (mediaType === 'tv') {
+        currentTVShow = mediaItem;
+
+        try {
+            const response = await getTVDetails(mediaId);
+            const details = response;
+            window.currentTVDetails = details;
+
+            const currentSeason = mediaItem.lastViewedSeason || 1;
+            const currentEpisode = mediaItem.lastViewedEpisode || 1;
+
+            const seasonOptions = [];
+            const actualSeasons = details.seasons.filter(season => season.season_number > 0);
+
+            for (const season of actualSeasons) {
+                const selected = season.season_number == currentSeason;
+
+                let displayEpisodeCount = season.episode_count;
+                if (mediaItem.last_episode_to_air) {
+                    const lastAiredSeason = mediaItem.last_episode_to_air.season_number;
+                    const lastAiredEpisode = mediaItem.last_episode_to_air.episode_number;
+
+                    if (season.season_number === lastAiredSeason) {
+                        displayEpisodeCount = lastAiredEpisode;
+                    } else if (season.season_number > lastAiredSeason) {
+                        displayEpisodeCount = 0;
+                    }
+                }
+
+                seasonOptions.push(generateSelectOption(
+                    season.season_number,
+                    `Sezon ${season.season_number} (${displayEpisodeCount} odcinków)`,
+                    selected
+                ));
+            }
+
+            const currentSeasonData = details.seasons.find(s => s.season_number == currentSeason);
+            const maxEpisodes = currentSeasonData ? currentSeasonData.episode_count : 20;
+
+            let maxAvailableEpisode = maxEpisodes;
+            if (mediaItem.last_episode_to_air) {
+                const lastAiredSeason = mediaItem.last_episode_to_air.season_number;
+                const lastAiredEpisode = mediaItem.last_episode_to_air.episode_number;
+
+                if (currentSeason === lastAiredSeason) {
+                    maxAvailableEpisode = lastAiredEpisode;
+                } else if (currentSeason > lastAiredSeason) {
+                    maxAvailableEpisode = 0;
+                }
+            }
+
+            const episodeOptions = [];
+
+            let seasonEpisodes = [];
+            try {
+                const seasonDetails = await getTVSeasonDetails(mediaId, currentSeason);
+                seasonEpisodes = seasonDetails.episodes || [];
+            } catch (error) {
+                console.error('Error fetching season details:', error);
+            }
+
+            for (let i = 1; i <= maxAvailableEpisode; i++) {
+                const episode = seasonEpisodes.find(ep => ep.episode_number === i);
+                const episodeDate = episode && episode.air_date ? ` (${formatDate(episode.air_date)})` : '';
+                episodeOptions.push(generateSelectOption(i, `Odcinek ${i}${episodeDate}`, i == currentEpisode));
+            }
+
+            mediaSpecificContent = `
+                <div class="episode-current-progress">
+                    <h4><i class="fas fa-tv"></i> Informacje o serialu</h4>
+                    <p><strong>Liczba sezonów:</strong> ${actualSeasons.length}</p>
+                    <p><strong>Ostatni wyemitowany:</strong> ${mediaItem.last_episode_to_air ?
+                    formatEpisodeWithDate(mediaItem.last_episode_to_air.season_number, mediaItem.last_episode_to_air.episode_number, mediaItem.last_episode_to_air.air_date) :
+                    'Brak informacji'}</p>
+                    <p><strong>Następny odcinek:</strong> ${mediaItem.next_episode_to_air ?
+                    formatEpisodeWithDate(mediaItem.next_episode_to_air.season_number, mediaItem.next_episode_to_air.episode_number, mediaItem.next_episode_to_air.air_date) :
+                    'Brak planowanych'}</p>
+                </div>
+
+                <div class="settings-section">
+                    <h4><i class="fas fa-play"></i> Postęp oglądania</h4>
+                    <div class="episode-form-row">
+                        <div class="episode-form-group">
+                            <label for="seasonSelect">Ostatni obejrzany sezon:</label>
+                            <select id="seasonSelect" onchange="handleSeasonChange()">
+                                ${seasonOptions.join('')}
+                            </select>
+                        </div>
+
+                        <div class="episode-form-group">
+                            <label for="episodeSelect">Ostatni obejrzany odcinek:</label>
+                            <select id="episodeSelect" onchange="updateMissedEpisodesWarning()">
+                                ${episodeOptions.join('')}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    ${(() => {
+                    const missedData = calculateMissedEpisodes(mediaItem, details.seasons);
+                    return missedData.count > 0 ? generateMissedEpisodesHtml(missedData) : '';
+                })()}
+                </div>
+            `;
+        } catch (error) {
+            console.error('Błąd ładowania ustawień serialu:', error);
+            showToast(`Błąd podczas ładowania ustawień: ${error.message}`, 'error');
+            return;
+        }
+    } else if (mediaType === 'movie') {
+        window.currentMovie = mediaItem;
+        const isWatched = mediaItem.watched || false;
+
+        mediaSpecificContent = `
+            <div class="settings-section">
+                <h4><i class="fas fa-eye"></i> Status obejrzenia</h4>
+                <button class="btn-toggle ${isWatched ? 'watched' : 'unwatched'}" 
+                        onclick="toggleMovieWatchedInSettings()">
+                    <i class="fas ${isWatched ? 'fa-check-circle' : 'fa-eye'}"></i>
+                    ${isWatched ? 'Obejrzany' : 'Do obejrzenia'}
+                </button>
+                ${isWatched && mediaItem.watch_date ?
+                `<p class="watch-date">Obejrzany: ${formatDate(mediaItem.watch_date)}</p>` : ''
+            }
+            </div>
+        `;
+    }
+
+    settingsModalContent.innerHTML = `
+        <div class="modal-header">
+            <h2>${title}</h2>
+            <button class="modal-close-btn" onclick="closeMediaSettings()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            ${mediaSpecificContent}
+
+            <div class="settings-section">
+                <h4><i class="fas fa-star"></i> Oceń ${mediaType === 'movie' ? 'film' : 'serial'}</h4>
+                <div class="star-rating">
+                    ${generateStarRating(currentRating)}
+                    <button class="star-btn clear-rating" onclick="setMediaRating(0)" title="Usuń ocenę">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <p class="rating-text">${currentRating > 0 ? `Twoja ocena: ${currentRating}/5` : 'Nie oceniono'}</p>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeMediaSettings()">Anuluj</button>
+                <button class="btn-save" onclick="saveMediaSettings('${mediaType}')">Zapisz</button>
+            </div>
+        </div>
+    `;
+
+    settingsModal.classList.remove('hidden');
+}
+
+function generateStarRating(currentRating) {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+        stars.push(`
+            <button class="star-btn ${i <= currentRating ? 'active' : ''}" 
+                    onclick="setMediaRating(${i})" 
+                    onmouseenter="hoverStars(${i})"
+                    onmouseleave="resetStarsHover(${currentRating})"
+                    data-rating="${i}">
+                <i class="fas fa-star"></i>
+            </button>
+        `);
+    }
+    return stars.join('');
+}
+
+function hoverStars(rating) {
+    const stars = document.querySelectorAll('.star-btn:not(.clear-rating)');
+    stars.forEach((star, index) => {
+        if (index < rating) {
+            star.classList.add('hover');
+        } else {
+            star.classList.remove('hover');
+        }
+    });
+}
+
+function resetStarsHover(currentRating) {
+    const stars = document.querySelectorAll('.star-btn:not(.clear-rating)');
+    stars.forEach((star, index) => {
+        star.classList.remove('hover');
+    });
+}
+
+function setMediaRating(rating) {
+    const stars = document.querySelectorAll('.star-btn:not(.clear-rating)');
+    const ratingText = document.querySelector('.rating-text');
+
+    stars.forEach((star, index) => {
+        if (index < rating) {
+            star.classList.add('active');
+        } else {
+            star.classList.remove('active');
+        }
+    });
+
+    window.tempMediaRating = rating;
+    ratingText.textContent = rating > 0 ? `Twoja ocena: ${rating}/5` : 'Nie oceniono';
+}
+
+function saveMediaSettings(mediaType) {
+    if (mediaType === 'tv' && currentTVShow) {
+        const seasonSelect = document.getElementById('seasonSelect');
+        const episodeSelect = document.getElementById('episodeSelect');
+
+        if (!seasonSelect || !episodeSelect) return;
+
+        const season = parseInt(seasonSelect.value);
+        const episode = parseInt(episodeSelect.value);
+
+        const tvShowIndex = watchlist.findIndex(item => item.id === currentTVShow.id && item.media_type === 'tv');
+        if (tvShowIndex !== -1) {
+            watchlist[tvShowIndex].lastViewedSeason = season;
+            watchlist[tvShowIndex].lastViewedEpisode = episode;
+
+            // Save rating if changed
+            if (window.tempMediaRating !== undefined) {
+                watchlist[tvShowIndex].rating = window.tempMediaRating;
+            }
+
+            localStorage.setItem('watchlist', JSON.stringify(watchlist));
+            loadWatchlist();
+            showToast('Ustawienia serialu zostały zapisane!', 'success');
+            closeMediaSettings();
+        }
+    } else if (mediaType === 'movie' && window.currentMovie) {
+        const movieIndex = watchlist.findIndex(item =>
+            item.id === window.currentMovie.id && item.media_type === 'movie'
+        );
+
+        if (movieIndex === -1) return;
+
+        // Save rating
+        if (window.tempMediaRating !== undefined) {
+            watchlist[movieIndex].rating = window.tempMediaRating;
+        }
+
+        // Save watched status
+        if (window.tempMovieWatched !== undefined) {
+            watchlist[movieIndex].watched = window.tempMovieWatched;
+            watchlist[movieIndex].watch_date = window.tempMovieWatchDate;
+        }
+
+        localStorage.setItem('watchlist', JSON.stringify(watchlist));
+        loadWatchlist();
+        showToast('Ustawienia filmu zostały zapisane!', 'success');
+        closeMediaSettings();
+    }
+}
+
+function closeMediaSettings() {
+    settingsModal.classList.add('hidden');
+    currentTVShow = null;
+    window.currentMovie = null;
+    window.tempMediaRating = undefined;
+    window.tempMovieWatched = undefined;
+    window.tempMovieWatchDate = undefined;
+    if (window.currentTVDetails) {
+        delete window.currentTVDetails;
+    }
+}
+
+function toggleMovieWatchedInSettings() {
+    const toggleBtn = document.querySelector('.btn-toggle');
+    const watchDateElement = document.querySelector('.watch-date');
+
+    const isCurrentlyWatched = toggleBtn.classList.contains('watched');
+    const newWatchedState = !isCurrentlyWatched;
+
+    if (newWatchedState) {
+        toggleBtn.classList.remove('unwatched');
+        toggleBtn.classList.add('watched');
+        toggleBtn.innerHTML = '<i class="fas fa-check-circle"></i> Obejrzany';
+
+        if (!watchDateElement) {
+            const watchDate = new Date().toISOString();
+            const watchDateHtml = `<p class="watch-date">Obejrzany: ${formatDate(watchDate)}</p>`;
+            toggleBtn.insertAdjacentHTML('afterend', watchDateHtml);
+        }
+    } else {
+        toggleBtn.classList.remove('watched');
+        toggleBtn.classList.add('unwatched');
+        toggleBtn.innerHTML = '<i class="fas fa-eye"></i> Do obejrzenia';
+
+        if (watchDateElement) {
+            watchDateElement.remove();
+        }
+    }
+
+    window.tempMovieWatched = newWatchedState;
+    window.tempMovieWatchDate = newWatchedState ? new Date().toISOString() : null;
 }
 
 function getStatusInPolish(status) {
