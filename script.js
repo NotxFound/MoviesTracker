@@ -1001,17 +1001,10 @@ function generateSelectOption(value, text, isSelected = false) {
 }
 
 function generateMissedEpisodesHtml(missedData) {
-    const episodesList = missedData.episodes.map(ep =>
-        `<div class="missed-episode-item"> ${ep.display}</div> `
-    ).join('');
-
     return `
                     <div class="episode-missed-info">
             <h5><i class="fas fa-exclamation-triangle"></i> Nieobejrzane wyemitowane odcinki</h5>
-            <p>Masz <strong>${missedData.count}</strong> nieobejrzanych odcinków:</p>
-            <div class="episode-missed-list">
-                ${episodesList}
-            </div>
+            <p>Masz <strong>${missedData.count}</strong> nieobejrzanych odcinków.</p>
         </div> `;
 }
 
