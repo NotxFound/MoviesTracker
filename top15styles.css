@@ -1,0 +1,36 @@
+body {
+    background-image: url(https://images4.alphacoders.com/165/thumb-1920-165394.jpg);
+    background-size: auto;
+    color: white;
+}
+
+td {
+    border: 1px solid #c40202;
+    text-align: center;
+    height: 25px;
+    padding: 0 5px;
+}
+
+.header {
+    background-color: #003300;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+tr {
+    background-color: #000000;
+}
+
+tr:nth-of-type(2) {
+    color: #CC9900;
+}
+
+tr:nth-of-type(3) {
+    color: #939393;
+}
+
+tr:nth-of-type(4) {
+    color: #6B4226;
+}
